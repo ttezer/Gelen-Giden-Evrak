@@ -1,0 +1,11 @@
+{
+    "vatanin_babasi_v": "27.5",
+    "tesseract_path": "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+    "arsiv_klasoru": "Arsiv",
+    "varsayilan_tip": "Gelen",
+    "varsayilan_kategori": "Otobüs",
+    "wia_format_guid": "{B96B3CA3-0728-11D3-9D7B-0000F81EF32E}",
+    "log_dosyasi": "sistem.log",
+    "sirket_adi": "Belge Arşiv Sistemi",
+    "logo_dosyasi": "logo.png"
+}
