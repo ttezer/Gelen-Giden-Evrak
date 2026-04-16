@@ -79,6 +79,18 @@ class DocumentViewer(QGraphicsView):
         if self.current_image:
             self.current_image = self.current_image.rotate(angle, expand=True)
             self.update_view()
+            # Döndürülmüş görüntüyü geçici dosyaya kaydet (PDF dahil)
+            import tempfile, os
+            ext = ".jpg"
+            if self.current_file_path and self.current_file_path.lower().endswith(".pdf"):
+                ext = ".png"
+            tmp = tempfile.NamedTemporaryFile(suffix=ext, delete=False)
+            tmp.close()
+            try:
+                self.current_image.save(tmp.name, quality=95)
+                self.current_file_path = tmp.name
+            except Exception as e:
+                logging.error(f"Döndürme Geçici Kayıt Hatası: {e}")
 
     def next_page(self):
         if self.pdf_doc and self.current_page_idx < self.total_pages - 1:

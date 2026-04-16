@@ -1,6 +1,5 @@
 import sys, os, json, shutil, logging, datetime, pytesseract
 print("-" * 50)
-print("Herşey VATAN için... Tacettin TEZER")
 print("-" * 50)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QGridLayout, QLabel, QLineEdit, 
@@ -180,6 +179,7 @@ class BelgeKayitSistemi(QMainWindow):
             /* Paneller */
             QFrame#LeftPanel {
                 background-color: #242B33;
+            }
             QInputDialog QLabel, QMessageBox QLabel {
                 color: white;
                 font-size: 14px;
@@ -372,29 +372,34 @@ class BelgeKayitSistemi(QMainWindow):
         layout.addLayout(self.grid)
         layout.addSpacing(15)
         
-        self.btn_scan = self.create_btn("📸 BELGE TARA", "#3498DB")
-        self.btn_file = self.create_btn("📁 DOSYA SEÇ", "#9B59B6")
-        self.btn_save = self.create_btn("💾 SİSTEME KAYDET", "#27AE60", height=65, glow=True)
-        self.btn_search = self.create_btn("🔍 ARŞİVDE ARA", "#E67E22")
-        self.btn_exit = self.create_btn("🚪 SİSTEMDEN ÇIK", "#E74C3C", height=40)
-        
+        small_style = "font-size: 13px; padding: 0 8px;"
+        self.btn_scan   = self.create_btn("📸 TARA",  "#3498DB", height=45, style=small_style)
+        self.btn_file   = self.create_btn("📁 DOSYA", "#9B59B6", height=45, style=small_style)
+        self.btn_exit   = self.create_btn("🚪 ÇIK",   "#E74C3C", height=45, style=small_style)
+        self.btn_save   = self.create_btn("💾 SİSTEME KAYDET", "#27AE60", height=60, glow=True)
+        self.btn_search = self.create_btn("🔍 ARŞİVDE ARA",    "#E67E22", height=45)
+
         self.btn_scan.clicked.connect(self.tara)
         self.btn_file.clicked.connect(self.dosya_sec)
         self.btn_save.clicked.connect(self.kaydet)
         self.btn_search.clicked.connect(self.sorgula)
         self.btn_exit.clicked.connect(self.close)
 
-        layout.addWidget(self.btn_scan); layout.addWidget(self.btn_file)
-        layout.addSpacing(10); layout.addWidget(self.btn_save)
-        layout.addSpacing(10); layout.addWidget(self.btn_search)
-        layout.addSpacing(10); layout.addWidget(self.btn_exit)
-        
-        # === İMZA (Herşey VATAN için... Tacettin TEZER) ===
-        layout.addStretch(1) # Boşluk bırak
-        imza = QLabel("Herşey VATAN için... Tacettin TEZER")
-        imza.setStyleSheet("color: #34495E; font-size: 11px; font-style: italic; margin-top: 10px;")
-        imza.setAlignment(Qt.AlignCenter)
-        layout.addWidget(imza)
+        # Satır 1: TARA | DOSYA | ÇIK  (yan yana 3 buton)
+        btn_row1 = QHBoxLayout()
+        btn_row1.setSpacing(6)
+        btn_row1.addWidget(self.btn_scan)
+        btn_row1.addWidget(self.btn_file)
+        btn_row1.addWidget(self.btn_exit)
+
+        layout.addStretch(1)
+        layout.addLayout(btn_row1)
+        layout.addSpacing(8)
+        layout.addWidget(self.btn_save)
+        layout.addSpacing(6)
+        layout.addWidget(self.btn_search)
+        layout.addSpacing(8)
+
         
         self.main_layout.addWidget(left_panel)
 
@@ -550,7 +555,8 @@ class BelgeKayitSistemi(QMainWindow):
             if isinstance(widget, QLineEdit): widget.clear()
             elif isinstance(widget, QComboBox): widget.setCurrentIndex(0)
             elif isinstance(widget, QDateEdit): widget.setDate(QDate.currentDate())
-        self.fields["ad1"].setFocus()
+        if "ad1" in self.fields:
+            self.fields["ad1"].setFocus()
 
     def closeEvent(self, event: QCloseEvent):
         msg = QMessageBox(self)
@@ -565,7 +571,16 @@ class BelgeKayitSistemi(QMainWindow):
 
     def tara(self):
         path = self.scanner.scan_to_file()
-        if path: self.viewer.load_file(path)
+        if path:
+            self.viewer.load_file(path)
+        else:
+            QMessageBox.warning(self, "Tarama Hatası",
+                "Belge taranamadı.\n\n"
+                "Olası nedenler:\n"
+                "• Tarayıcı bağlı değil veya açık değil\n"
+                "• WIA sürücüsü yüklü değil (pywin32)\n"
+                "• Tarama işlemi iptal edildi\n\n"
+                "Detaylar için sistem.log dosyasına bakın.")
 
     def dosya_sec(self):
         path, _ = QFileDialog.getOpenFileName(self, "Dosya Seç", "", 

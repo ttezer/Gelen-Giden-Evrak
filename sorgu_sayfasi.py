@@ -12,7 +12,10 @@ from database import DatabaseManager
 class SorguSayfasi(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.db = DatabaseManager()
+        arsiv_dir = "Arsiv"
+        if parent and hasattr(parent, 'config'):
+            arsiv_dir = parent.config.get("arsiv_klasoru", "Arsiv")
+        self.db = DatabaseManager(arsiv_dir=arsiv_dir)
         self.init_ui()
 
     def init_ui(self):
@@ -209,10 +212,10 @@ class SorguSayfasi(QDialog):
             share_menu.setStyleSheet("QMenu { background-color: #2C3E50; color: white; border-radius: 8px; } QMenu::item:selected { background-color: #3498DB; }")
             
             email_act = QAction("📧 E-Posta Gönder", self)
-            email_act.triggered.connect(lambda: self.e_posta_gonder(row['path'], row['kod']))
-            
+            email_act.triggered.connect(lambda ch=False, p=row['path'], k=row['kod']: self.e_posta_gonder(p, k))
+
             wa_act = QAction("💬 WhatsApp'ta Paylaş", self)
-            wa_act.triggered.connect(lambda: self.whatsapp_paylas(row['path']))
+            wa_act.triggered.connect(lambda ch=False, p=row['path']: self.whatsapp_paylas(p))
             
             share_menu.addAction(email_act)
             share_menu.addAction(wa_act)
