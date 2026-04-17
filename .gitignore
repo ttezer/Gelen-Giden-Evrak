@@ -9,7 +9,8 @@ venv/
 # PyInstaller
 build/
 dist/
-*.spec
+*.spec.bak
+*.manifest
 
 # IDE
 .vscode/
@@ -17,7 +18,15 @@ dist/
 
 # Database & Logs (her kullanıcıda farklı)
 *.db
+*.sqlite
+*.sqlite3
 *.log
+
+# Local config / secrets
+.env
+.env.*
+config.local.json
+secrets.*
 
 # OS
 Thumbs.db
@@ -32,3 +41,6 @@ scan_*.png
 
 # Gemini
 .gemini/
+
+# Local assistant/cache folders
+.claude/
